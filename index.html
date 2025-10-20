@@ -1,514 +1,482 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Multi-Task Alarm Reminder</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-            background: #f7fafc;
-            color: #0f172a;
-            padding: 24px;
-            margin: 0;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-            padding: 18px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        input, textarea, button {
-            font-size: 16px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid #e6e9ef;
-            outline: none;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        button {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: auto;
-            margin-top: 8px;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
-
-        .deleteBtn {
-            background: #ef4444;
-        }
-
-        .deleteBtn:hover {
-            background: #dc2626;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: 600;
-        }
-
-        .task {
-            border: 1px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            position: relative;
-            background: #f8fafc;
-        }
-
-        .task .controls {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            display: flex;
-            gap: 4px;
-        }
-
-        .task .note {
-            margin-top: 6px;
-            padding-right: 80px;
-        }
-
-        .ringing {
-            background: #fffbeb;
-            border: 2px solid #f59e0b;
-            padding: 20px;
-            border-radius: 12px;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-            }
-
-            70% {
-                box-shadow: 0 0 0 15px rgba(245, 158, 11, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
-            }
-        }
-
-        .danger {
-            color: #7c2d12;
-            font-weight: 700;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
-        .small {
-            font-size: 13px;
-            color: #475569;
-            margin-top: 6px;
-        }
-
-        .row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .row button {
-            flex: 1;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 999;
-            display: none;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 20px;
-            color: #64748b;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .status-pending {
-            background-color: #10b981;
-        }
-
-        .status-ringing {
-            background-color: #f59e0b;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.3;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .status-completed {
-            background-color: #6b7280;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Multi-Task Alarm Reminder</title>
+<style>
+  body { 
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; 
+    background:#f7fafc; 
+    color:#0f172a; 
+    padding:24px; 
+    margin: 0;
+  }
+  .card { 
+    background:white; 
+    border-radius:12px; 
+    box-shadow:0 6px 18px rgba(15,23,42,0.06); 
+    padding:18px; 
+    max-width:800px; 
+    margin:0 auto; 
+  }
+  input, textarea, button { 
+    font-size:16px; 
+    padding:8px 10px; 
+    border-radius:8px; 
+    border:1px solid #e6e9ef; 
+    outline:none; 
+    width: 100%;
+    box-sizing: border-box;
+  }
+  button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: auto;
+    margin-top: 8px;
+  }
+  button:hover {
+    background: #2563eb;
+  }
+  .deleteBtn {
+    background: #ef4444;
+  }
+  .deleteBtn:hover {
+    background: #dc2626;
+  }
+  label { 
+    display:block; 
+    margin-top:12px; 
+    font-weight:600; 
+  }
+  .task { 
+    border:1px solid #e2e8f0; 
+    padding:12px; 
+    border-radius:8px; 
+    margin-top:10px; 
+    position:relative; 
+    background: #f8fafc;
+  }
+  .task .controls { 
+    position:absolute; 
+    right:10px; 
+    top:10px; 
+    display:flex; 
+    gap:4px; 
+  }
+  .task .note { 
+    margin-top:6px; 
+    padding-right: 80px;
+  }
+  .ringing { 
+    background:#fffbeb; 
+    border:2px solid #f59e0b; 
+    padding:20px; 
+    border-radius:12px; 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(245, 158, 11, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  }
+  .danger { 
+    color:#7c2d12; 
+    font-weight:700; 
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  .small { 
+    font-size:13px; 
+    color:#475569; 
+    margin-top:6px; 
+  }
+  .row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .row button {
+    flex: 1;
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 999;
+    display: none;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+  }
+  .status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  .status-pending {
+    background-color: #10b981;
+  }
+  .status-ringing {
+    background-color: #f59e0b;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+  .status-completed {
+    background-color: #6b7280;
+  }
+</style>
 </head>
-
 <body>
-    <div class="card">
-        <h2>Multi-Task Alarm Reminder</h2>
-        <label for="taskTime">Select Date & Time</label>
-        <input id="taskTime" type="datetime-local" />
+<div class="card">
+  <h2>Multi-Task Alarm Reminder</h2>
 
-        <label for="taskNote">Note / Task Name</label>
-        <textarea id="taskNote" rows="2" placeholder="Task description..."></textarea>
+  <!-- Add new task -->
+  <label for="taskTime">Select Date & Time</label>
+  <input id="taskTime" type="datetime-local" />
 
-        <div class="row">
-            <button id="addTaskBtn">Add Task</button>
-            <button id="notifyPerm">Enable Notifications</button>
-        </div>
+  <label for="taskNote">Note / Task Name</label>
+  <textarea id="taskNote" rows="2" placeholder="Task description..."></textarea>
 
-        <h3 style="margin-top:20px;">Tasks List</h3>
-        <div id="tasksArea">
-            <div class="empty-state" id="emptyState">No tasks added yet</div>
-        </div>
+  <div class="row">
+    <button id="addTaskBtn">Add Task</button>
+    <button id="notifyPerm">Enable Notifications</button>
+  </div>
 
-        <div class="small">Current Local Time: <span id="nowClock">--:--:--</span></div>
-    </div>
+  <h3 style="margin-top:20px;">Tasks List</h3>
+  <div id="tasksArea">
+    <div class="empty-state" id="emptyState">No tasks added yet</div>
+  </div>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="ringing" id="ringingDiv" style="display:none">
-        <div class="danger">🔔 ALARM RINGING!</div>
-        <div id="ringTaskNote" style="font-size: 18px; margin-bottom: 20px;"></div>
-        <div style="margin-bottom: 15px; font-size: 14px; color: #475569;">
-            Scheduled for: <span id="ringTaskTime"></span>
-        </div>
-        <button id="stopAlarmBtn" style="font-size: 18px; padding: 12px 24px;">Stop Alarm</button>
-    </div>
+  <div class="small">Current Local Time: <span id="nowClock">--:--:--</span></div>
+</div>
 
-    <script>
-        // -------------------------
-        // Multi-task alarm system with persistent storage
-        // -------------------------
+<!-- Alarm overlay -->
+<div class="overlay" id="overlay"></div>
+<div class="ringing" id="ringingDiv" style="display:none">
+  <div class="danger">🔔 ALARM RINGING!</div>
+  <div id="ringTaskNote" style="font-size: 18px; margin-bottom: 20px;"></div>
+  <div style="margin-bottom: 15px; font-size: 14px; color: #475569;">
+    Scheduled for: <span id="ringTaskTime"></span>
+  </div>
+  <button id="stopAlarmBtn" style="font-size: 18px; padding: 12px 24px;">Stop Alarm</button>
+</div>
 
-        const addBtn = document.getElementById('addTaskBtn');
-        const tasksArea = document.getElementById('tasksArea');
-        const taskTimeEl = document.getElementById('taskTime');
-        const taskNoteEl = document.getElementById('taskNote');
-        const ringingDiv = document.getElementById('ringingDiv');
-        const ringTaskNote = document.getElementById('ringTaskNote');
-        const ringTaskTime = document.getElementById('ringTaskTime');
-        const stopAlarmBtn = document.getElementById('stopAlarmBtn');
-        const notifyBtn = document.getElementById('notifyPerm');
-        const nowClock = document.getElementById('nowClock');
-        const overlay = document.getElementById('overlay');
-        const emptyState = document.getElementById('emptyState');
+<script>
+  // -------------------------
+  // Multi-task alarm system with persistent storage
+  // -------------------------
 
-        let audioCtx = null, oscillator = null, gainNode = null;
-        let tasks = [];
-        let activeAlarm = null;
-        let alarmInterval = null;
-        let alarmAudio = null;
+  const addBtn = document.getElementById('addTaskBtn');
+  const tasksArea = document.getElementById('tasksArea');
+  const taskTimeEl = document.getElementById('taskTime');
+  const taskNoteEl = document.getElementById('taskNote');
+  const ringingDiv = document.getElementById('ringingDiv');
+  const ringTaskNote = document.getElementById('ringTaskNote');
+  const ringTaskTime = document.getElementById('ringTaskTime');
+  const stopAlarmBtn = document.getElementById('stopAlarmBtn');
+  const notifyBtn = document.getElementById('notifyPerm');
+  const nowClock = document.getElementById('nowClock');
+  const overlay = document.getElementById('overlay');
+  const emptyState = document.getElementById('emptyState');
 
-        // --- Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            });
+  let audioCtx = null, oscillator = null, gainNode = null;
+  let tasks = [];
+  let activeAlarm = null;
+  let alarmInterval = null;
+  let alarmAudio = null;
+
+  // Load tasks from localStorage on page load
+  function loadTasks() {
+    const storedTasks = localStorage.getItem('alarmTasks');
+    if (storedTasks) {
+      tasks = JSON.parse(storedTasks).map(task => ({
+        ...task,
+        time: new Date(task.time),
+        ringing: task.ringing || false,
+        completed: task.completed || false
+      }));
+      renderTasks();
+      
+      // Check if there's an active alarm that should still be ringing
+      const activeTask = tasks.find(task => task.ringing && !task.completed);
+      if (activeTask) {
+        triggerAlarm(activeTask);
+      }
+    }
+  }
+
+  // Save tasks to localStorage
+  function saveTasks() {
+    localStorage.setItem('alarmTasks', JSON.stringify(tasks));
+  }
+
+  function startAlarmSound() {
+    // Stop any existing sound first
+    stopAlarmSound();
+    
+    // Create audio context for modern browsers
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      oscillator = audioCtx.createOscillator();
+      gainNode = audioCtx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 880;
+      gainNode.gain.value = 0.15;
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.start();
+      
+      // Create a beeping pattern
+      let beepCount = 0;
+      const beepInterval = setInterval(() => {
+        if (gainNode) {
+          // Alternate between high and low volume for beeping effect
+          gainNode.gain.value = (beepCount % 2 === 0) ? 0.15 : 0.05;
+          beepCount++;
+        } else {
+          clearInterval(beepInterval);
         }
-        // -----------------------------------
-
-        // Load tasks from localStorage on page load
-        function loadTasks() {
-            const storedTasks = localStorage.getItem('alarmTasks');
-            if (storedTasks) {
-                tasks = JSON.parse(storedTasks).map(task => ({
-                    ...task,
-                    // Note: Date objects need to be re-created from string
-                    time: new Date(task.time), 
-                    ringing: task.ringing || false,
-                    completed: task.completed || false
-                }));
-                renderTasks();
-
-                // Check if there's an active alarm that should still be ringing
-                const activeTask = tasks.find(task => task.ringing && !task.completed);
-                if (activeTask) {
-                    triggerAlarm(activeTask);
-                }
-            }
-        }
-
-        // Save tasks to localStorage (storing Date as ISO string)
-        function saveTasks() {
-            const tasksToSave = tasks.map(task => ({
-                ...task,
-                time: task.time.toISOString() // Convert Date object to string for storage
-            }));
-            localStorage.setItem('alarmTasks', JSON.stringify(tasksToSave));
-        }
-
-        function startAlarmSound() {
-            // Stop any existing sound first
-            stopAlarmSound();
-
-            // Create audio context for modern browsers
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                oscillator = audioCtx.createOscillator();
-                gainNode = audioCtx.createGain();
-
-                oscillator.type = 'sine';
-                oscillator.frequency.value = 880;
-                gainNode.gain.value = 0.15;
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.start();
-
-                // Create a beeping pattern
-                let beepCount = 0;
-                const beepInterval = setInterval(() => {
-                    if (gainNode) {
-                        // Alternate between high and low volume for beeping effect
-                        gainNode.gain.value = (beepCount % 2 === 0) ? 0.15 : 0.05;
-                        beepCount++;
-                    } else {
-                        clearInterval(beepInterval);
-                    }
-                }, 500);
-
-            } catch (e) {
-                console.error("Audio context not supported or failed:", e);
-                // Fallback to a simple alert/audio if web audio fails (optional, as sound outside of active tab is complex)
-            }
-
-            // Also use browser vibration if available
-            if (navigator.vibrate) {
-                // Vibrate pattern: 500ms vibrate, 200ms pause, 500ms vibrate
-                navigator.vibrate([500, 200, 500]);
-
-                // Continue vibration pattern
-                const vibrateInterval = setInterval(() => {
-                    if (activeAlarm) {
-                        navigator.vibrate([500, 200, 500]);
-                    } else {
-                        clearInterval(vibrateInterval);
-                        navigator.vibrate(0); // Stop vibration
-                    }
-                }, 2500);
-            }
-        }
-
-        function stopAlarmSound() {
-            // Stop Web Audio API sound
-            if (oscillator) {
-                try {
-                    oscillator.stop();
-                    oscillator.disconnect();
-                    gainNode.disconnect();
-                } catch (e) { }
-                oscillator = null;
-                gainNode = null;
-            }
-
-            // Stop HTML5 Audio
-            if (alarmAudio) {
-                alarmAudio.pause();
-                alarmAudio = null;
-            }
-
-            // Stop vibration
-            if (navigator.vibrate) {
-                navigator.vibrate(0);
-            }
-        }
-
-        // Live clock
+      }, 500);
+      
+    } catch (e) {
+      console.error("Audio context not supported:", e);
+      
+      // Fallback to HTML5 Audio
+      alarmAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA');
+      alarmAudio.loop = true;
+      
+      // Create oscillator using Web Audio API if available, otherwise use timeout
+      if (window.AudioContext || window.webkitAudioContext) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.value = 0.5;
+        
+        oscillator.start();
+        
+        setTimeout(() => {
+          oscillator.stop();
+        }, 500);
+        
+        // Repeat the beep
         setInterval(() => {
-            const now = new Date();
-            nowClock.textContent = now.toLocaleTimeString();
+          const repeatOscillator = audioContext.createOscillator();
+          const repeatGain = audioContext.createGain();
+          
+          repeatOscillator.connect(repeatGain);
+          repeatGain.connect(audioContext.destination);
+          
+          repeatOscillator.frequency.value = 800;
+          repeatOscillator.type = 'sine';
+          
+          repeatGain.gain.value = 0.5;
+          
+          repeatOscillator.start();
+          setTimeout(() => {
+            repeatOscillator.stop();
+          }, 500);
         }, 1000);
-
-        // Check for alarms (This runs only when the tab is open/active)
-        function checkAlarms() {
-            const now = new Date();
-            let shouldCheckBackground = false;
-
-            tasks.forEach(task => {
-                if (!task.ringing && !task.completed && now >= task.time) {
-                    triggerAlarm(task);
-                }
-            });
-            
-            // Check if any pending tasks are in the future to keep the service worker alive
-            shouldCheckBackground = tasks.some(task => !task.completed && task.time > now);
-
-            // Send message to Service Worker to tell it about pending alarms
-            if (navigator.serviceWorker.controller && shouldCheckBackground) {
-                navigator.serviceWorker.controller.postMessage({
-                    action: 'CHECK_ALARMS',
-                    tasks: tasks.filter(t => !t.completed)
-                });
-            }
+      }
+    }
+    
+    // Also use browser vibration if available
+    if (navigator.vibrate) {
+      // Vibrate pattern: 500ms vibrate, 200ms pause, 500ms vibrate
+      navigator.vibrate([500, 200, 500]);
+      
+      // Continue vibration pattern
+      const vibrateInterval = setInterval(() => {
+        if (activeAlarm) {
+          navigator.vibrate([500, 200, 500]);
+        } else {
+          clearInterval(vibrateInterval);
+          navigator.vibrate(0); // Stop vibration
         }
+      }, 2500);
+    }
+  }
 
-        function triggerAlarm(task) {
-            task.ringing = true;
-            activeAlarm = task;
+  function stopAlarmSound() {
+    // Stop Web Audio API sound
+    if (oscillator) {
+      try {
+        oscillator.stop();
+        oscillator.disconnect();
+        gainNode.disconnect();
+      } catch(e) {}
+      oscillator = null;
+      gainNode = null;
+    }
+    
+    // Stop HTML5 Audio
+    if (alarmAudio) {
+      alarmAudio.pause();
+      alarmAudio = null;
+    }
+    
+    // Stop vibration
+    if (navigator.vibrate) {
+      navigator.vibrate(0);
+    }
+  }
 
-            // Update UI to show alarm is ringing
-            renderTasks();
+  // Live clock
+  setInterval(() => {
+    const now = new Date();
+    nowClock.textContent = now.toLocaleTimeString();
+  }, 1000);
 
-            // Show the alarm modal
-            ringTaskNote.textContent = task.note || 'No description';
-            ringTaskTime.textContent = task.time.toLocaleString();
-            ringingDiv.style.display = 'block';
-            overlay.style.display = 'block';
+  // Check for alarms
+  function checkAlarms() {
+    const now = new Date();
+    tasks.forEach(task => {
+      if (!task.ringing && !task.completed && now >= task.time) {
+        triggerAlarm(task);
+      }
+    });
+  }
 
-            // Start alarm sound
-            startAlarmSound();
-
-            // Show browser notification if permission granted (important for visibility)
-            if (Notification.permission === "granted") {
-                const notification = new Notification('🔔 ALARM: ' + (task.note || 'Task'), {
-                    body: 'Time reached: ' + task.time.toLocaleTimeString(),
-                    icon: '/favicon.ico',
-                    tag: 'alarm-' + task.time.getTime(),
-                    requireInteraction: true // Keep notification until user interacts
-                });
-
-                notification.onclick = function () {
-                    window.focus();
-                    notification.close();
-                };
-            }
-
-            // If the page is not visible, try to get user's attention
-            if (document.hidden) {
-                // Change title to alert user
-                const originalTitle = document.title;
-                let blinkCount = 0;
-                const titleBlinker = setInterval(() => {
-                    document.title = (blinkCount % 2 === 0) ? '🔔 ALARM!' : originalTitle;
-                    blinkCount++;
-
-                    if (!activeAlarm) {
-                        clearInterval(titleBlinker);
-                        document.title = originalTitle;
-                    }
-                }, 1000);
-            }
-            // Save that this alarm has triggered (even if page is open)
-            saveTasks();
+  function triggerAlarm(task) {
+    task.ringing = true;
+    activeAlarm = task;
+    
+    // Update UI to show alarm is ringing
+    renderTasks();
+    
+    // Show the alarm modal
+    ringTaskNote.textContent = task.note || 'No description';
+    ringTaskTime.textContent = task.time.toLocaleString();
+    ringingDiv.style.display = 'block';
+    overlay.style.display = 'block';
+    
+    // Start alarm sound
+    startAlarmSound();
+    
+    // Save that this alarm has triggered
+    saveTasks();
+    
+    // Show browser notification if permission granted
+    if (Notification.permission === "granted") {
+      const notification = new Notification('Alarm: ' + (task.note || 'Task'), {
+        body: 'Time reached: ' + task.time.toLocaleString(),
+        icon: '/favicon.ico',
+        tag: 'alarm-' + task.time.getTime(),
+        requireInteraction: true // Keep notification until user interacts
+      });
+      
+      notification.onclick = function() {
+        window.focus();
+        notification.close();
+      };
+    }
+    
+    // If the page is not visible, try to get user's attention
+    if (document.hidden) {
+      // Change title to alert user
+      const originalTitle = document.title;
+      let blinkCount = 0;
+      const titleBlinker = setInterval(() => {
+        document.title = (blinkCount % 2 === 0) ? '🔔 ALARM!' : originalTitle;
+        blinkCount++;
+        
+        if (!activeAlarm) {
+          clearInterval(titleBlinker);
+          document.title = originalTitle;
         }
+      }, 1000);
+    }
+  }
 
-        function stopAlarm() {
-            if (activeAlarm) {
-                activeAlarm.ringing = false;
-                activeAlarm.completed = true;
-                activeAlarm = null;
-            }
+  function stopAlarm() {
+    if (activeAlarm) {
+      activeAlarm.ringing = false;
+      activeAlarm.completed = true;
+      activeAlarm = null;
+    }
+    
+    ringingDiv.style.display = 'none';
+    overlay.style.display = 'none';
+    stopAlarmSound();
+    saveTasks();
+    renderTasks();
+    
+    // Restore original title if it was changed
+    document.title = 'Multi-Task Alarm Reminder';
+  }
 
-            ringingDiv.style.display = 'none';
-            overlay.style.display = 'none';
-            stopAlarmSound();
-            saveTasks();
-            renderTasks();
-
-            // Restore original title if it was changed
-            document.title = 'Multi-Task Alarm Reminder';
-            
-            // Close any existing browser notification
-            Notification.getNotifications({ tag: 'alarm-' + activeAlarm.time.getTime() }).then(notifications => {
-                notifications.forEach(n => n.close());
-            });
-        }
-
-        function renderTasks() {
-            tasksArea.innerHTML = '';
-
-            if (tasks.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            } else {
-                emptyState.style.display = 'none';
-            }
-
-            // Sort tasks by time
-            tasks.sort((a, b) => a.time - b.time);
-
-            tasks.forEach((task, index) => {
-                const div = document.createElement('div');
-                div.className = 'task';
-
-                // Determine status and styling
-                let statusClass = 'status-pending';
-                let statusText = 'Pending';
-                let isPast = task.time < new Date();
-
-                if (task.ringing && !task.completed) {
-                    statusClass = 'status-ringing';
-                    statusText = 'Ringing';
-                    div.style.borderLeft = '4px solid #f59e0b';
-                } else if (task.completed) {
-                    statusClass = 'status-completed';
-                    statusText = 'Completed';
-                    div.style.borderLeft = '4px solid #6b7280';
-                    div.style.opacity = '0.7';
-                } else if (isPast) {
-                    // Missed alarm (past time, not completed, not currently ringing)
-                    statusClass = 'status-completed'; 
-                    statusText = 'Missed';
-                    div.style.borderLeft = '4px solid #ef4444';
-                    div.style.opacity = '0.7';
-                } else {
-                    div.style.borderLeft = '4px solid #10b981';
-                }
-
-                div.innerHTML = `
+  function renderTasks() {
+    tasksArea.innerHTML = '';
+    
+    if (tasks.length === 0) {
+      emptyState.style.display = 'block';
+      return;
+    } else {
+      emptyState.style.display = 'none';
+    }
+    
+    // Sort tasks by time
+    tasks.sort((a, b) => a.time - b.time);
+    
+    tasks.forEach((task, index) => {
+      const div = document.createElement('div');
+      div.className = 'task';
+      
+      // Determine status and styling
+      let statusClass = 'status-pending';
+      let statusText = 'Pending';
+      
+      if (task.ringing && !task.completed) {
+        statusClass = 'status-ringing';
+        statusText = 'Ringing';
+        div.style.borderLeft = '4px solid #f59e0b';
+      } else if (task.completed) {
+        statusClass = 'status-completed';
+        statusText = 'Completed';
+        div.style.borderLeft = '4px solid #6b7280';
+        div.style.opacity = '0.7';
+      } else if (task.time < new Date()) {
+        statusClass = 'status-completed';
+        statusText = 'Missed';
+        div.style.borderLeft = '4px solid #ef4444';
+        div.style.opacity = '0.7';
+      } else {
+        div.style.borderLeft = '4px solid #10b981';
+      }
+      
+      div.innerHTML = `
         <div>
           <span class="status-indicator ${statusClass}"></span>
           <strong>${task.time.toLocaleString()}</strong>
@@ -518,137 +486,122 @@
         <div class="controls">
           <button data-index="${index}" class="deleteBtn">Delete</button>
         </div>`;
-                tasksArea.appendChild(div);
-            });
+      tasksArea.appendChild(div);
+    });
+    
+    document.querySelectorAll('.deleteBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-index'));
+        if (activeAlarm === tasks[i]) stopAlarm(); // stop if active
+        tasks.splice(i, 1);
+        saveTasks();
+        renderTasks();
+      });
+    });
+  }
 
-            document.querySelectorAll('.deleteBtn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const i = parseInt(btn.getAttribute('data-index'));
-                    if (activeAlarm === tasks[i]) stopAlarm(); // stop if active
-                    tasks.splice(i, 1);
-                    saveTasks();
-                    renderTasks();
-                });
-            });
-        }
+  addBtn.addEventListener('click', () => {
+    const timeVal = taskTimeEl.value;
+    const noteVal = taskNoteEl.value.trim();
+    if (!timeVal) { alert('Select date & time'); return; }
+    const t = new Date(timeVal);
+    if (isNaN(t.getTime())) { alert('Invalid date'); return; }
+    
+    // Check if time is in the past
+    if (t < new Date()) {
+      if (!confirm('This time is in the past. Do you still want to add this task?')) {
+        return;
+      }
+    }
+    
+    tasks.push({time: t, note: noteVal, ringing: false, completed: false});
+    saveTasks();
+    renderTasks();
+    taskTimeEl.value = ''; 
+    taskNoteEl.value = '';
+  });
 
-        addBtn.addEventListener('click', () => {
-            const timeVal = taskTimeEl.value;
-            const noteVal = taskNoteEl.value.trim();
-            if (!timeVal) { alert('Select date & time'); return; }
-            const t = new Date(timeVal);
-            if (isNaN(t.getTime())) { alert('Invalid date'); return; }
+  stopAlarmBtn.addEventListener('click', stopAlarm);
 
-            // Check if time is in the past
-            if (t < new Date()) {
-                if (!confirm('This time is in the past. Do you still want to add this task?')) {
-                    return;
-                }
-            }
+  notifyBtn.addEventListener('click', async () => {
+    if (!("Notification" in window)) { 
+      alert('Notifications not supported in this browser'); 
+      return;
+    }
+    
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      alert('Notifications enabled! You will receive browser notifications when alarms trigger.');
+    } else {
+      alert('Notifications permission denied. You may not see alarms if this tab is not active.');
+    }
+  });
 
-            tasks.push({ time: t, note: noteVal, ringing: false, completed: false });
-            saveTasks();
-            renderTasks();
-            taskTimeEl.value = '';
-            taskNoteEl.value = '';
+  // Set default datetime to current time + 5 minutes
+  function setDefaultDateTime() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 5);
+    
+    // Format for datetime-local input
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    taskTimeEl.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  // Initialize
+  setDefaultDateTime();
+  loadTasks();
+  
+  // Check for any alarms that should have triggered while the page was closed
+  window.addEventListener('load', function() {
+    const now = new Date();
+    let missedAlarms = [];
+    
+    tasks.forEach(task => {
+      // If task time has passed but it wasn't marked as completed
+      if (task.time <= now && !task.completed && !task.ringing) {
+        missedAlarms.push(task);
+      }
+    });
+    
+    if (missedAlarms.length > 0) {
+      const message = `You have ${missedAlarms.length} missed alarm(s). Would you like to trigger them now?`;
+      if (confirm(message)) {
+        missedAlarms.forEach(task => {
+          triggerAlarm(task);
         });
-
-        stopAlarmBtn.addEventListener('click', stopAlarm);
-
-        notifyBtn.addEventListener('click', async () => {
-            if (!("Notification" in window)) {
-                alert('Notifications not supported in this browser');
-                return;
-            }
-
-            const permission = await Notification.requestPermission();
-            if (permission === "granted") {
-                alert('Notifications enabled! You will receive browser notifications when alarms trigger.');
-            } else {
-                alert('Notifications permission denied. You may not see alarms if this tab is not active.');
-            }
+      } else {
+        // Mark as completed without ringing
+        missedAlarms.forEach(task => {
+          task.completed = true;
         });
+        saveTasks();
+        renderTasks();
+      }
+    }
+  });
 
-        // Set default datetime to current time + 5 minutes
-        function setDefaultDateTime() {
-            const now = new Date();
-            now.setMinutes(now.getMinutes() + 5);
+  // Start checking for alarms every second
+  alarmInterval = setInterval(checkAlarms, 1000);
 
-            // Format for datetime-local input
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
+  // Clean up when page is closed
+  window.addEventListener('beforeunload', function() {
+    stopAlarmSound();
+    if (alarmInterval) clearInterval(alarmInterval);
+  });
 
-            taskTimeEl.value = `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
+  // Handle page visibility changes
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && activeAlarm) {
+      // If page becomes visible and there's an active alarm, ensure it's displayed
+      triggerAlarm(activeAlarm);
+    }
+  });
 
-        // Initialize
-        setDefaultDateTime();
-        loadTasks();
-
-        // Check for any alarms that should have triggered while the page was closed
-        window.addEventListener('load', function () {
-            const now = new Date();
-            let missedAlarms = [];
-
-            tasks.forEach(task => {
-                // If task time has passed but it wasn't marked as completed
-                if (task.time <= now && !task.completed && !task.ringing) {
-                    missedAlarms.push(task);
-                }
-            });
-
-            if (missedAlarms.length > 0) {
-                const message = `You have ${missedAlarms.length} missed alarm(s). Would you like to trigger the first one now?`;
-                if (confirm(message)) {
-                    // Trigger the first missed alarm for immediate attention
-                    triggerAlarm(missedAlarms[0]);
-                    
-                    // Mark others as completed
-                    missedAlarms.slice(1).forEach(task => task.completed = true);
-                    saveTasks();
-                    renderTasks();
-                } else {
-                    // Mark all missed as completed without ringing
-                    missedAlarms.forEach(task => {
-                        task.completed = true;
-                    });
-                    saveTasks();
-                    renderTasks();
-                }
-            }
-        });
-
-        // Start checking for alarms every second
-        alarmInterval = setInterval(checkAlarms, 1000);
-
-        // Clean up when page is closed
-        window.addEventListener('beforeunload', function () {
-            stopAlarmSound();
-            if (alarmInterval) clearInterval(alarmInterval);
-        });
-
-        // Handle page visibility changes
-        document.addEventListener('visibilitychange', function () {
-            if (!document.hidden && activeAlarm) {
-                // If page becomes visible and there's an active alarm, ensure it's displayed
-                // This is important if the alarm was triggered by the Service Worker when the tab was closed
-                triggerAlarm(activeAlarm); 
-            }
-        });
-        
-        // Listen for messages from the Service Worker (e.g., when it triggers an alarm)
-        if ('serviceWorker' in navigator) {
-             navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data && event.data.action === 'ALARM_TRIGGERED') {
-                    // When the Service Worker sends an alarm trigger, we reload tasks 
-                    // and check for the active alarm to show the modal in the main tab.
-                    loadTasks(); 
-                }
-            });
-        }
-    </script>
+</script>
 </body>
 </html>
